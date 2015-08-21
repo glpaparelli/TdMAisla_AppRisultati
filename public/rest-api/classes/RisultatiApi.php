@@ -34,8 +34,7 @@ class RisultatiApi extends MySqlRestApi {
                     . 'LEFT JOIN iscrizione__squadra ON iscrizione__squadra.idIscrizione = iscrizione.id';
             $rs = $this->conn->query($query);
             if ($rs) {
-                $array_risultati = $rs->fetch_all(MYSQLI_ASSOC);
-                $rs->free();
+                $array_risultati = $this->fetch_all_assoc($rs);
                 foreach ($array_risultati as &$risultato) {
                     // tipo gara
                     $risultato['tipoGara']= $this->getTipoGara($risultato['idTipoGara']);
@@ -44,8 +43,7 @@ class RisultatiApi extends MySqlRestApi {
                     } else if ($risultato['idSquadra'] !== NULL) {
                         $risultato['squadra'] = $this->getSquadra($risultato['idSquadra']);
                     } else {
-                        // TODO eccezione dati inconsistenti
-                        throw new Exception("pippo");
+                        throw new InconsistentDataException('Both idAdesionePersonale and idSquadra are null');
                     }
                     unset($risultato['idTipoGara']);
                     unset($risultato['idAdesionePersonale']);
@@ -69,8 +67,7 @@ class RisultatiApi extends MySqlRestApi {
                     . "WHERE id = $idTipoGara";
             $rs = $this->conn->query($query);
             if ($rs) {
-                $r = $rs->fetch_all(MYSQLI_ASSOC)[0];
-                $rs->free();
+                $r = $this->fetch_all_assoc($rs)[0];
             } else {
                 throw new InconsistentDataException("No tipo_gara with id: $idTipoGara");
             }
@@ -97,8 +94,7 @@ class RisultatiApi extends MySqlRestApi {
                     WHERE adesione_personale.id = $idAdesionePersonale";
             $rs = $this->conn->query($query);
             if ($rs) {
-                $r = $rs->fetch_all(MYSQLI_ASSOC)[0];
-                $rs->free();
+                $r = $this->fetch_all_assoc($rs)[0];
                 
                 if ($r['societa'] === NULL) {
                     unset($r['societa']);
@@ -118,8 +114,7 @@ class RisultatiApi extends MySqlRestApi {
                     WHERE id = $idSquadra";
             $rs = $this->conn->query($query);
             if ($rs) {
-                $r = $rs->fetch_all(MYSQLI_ASSOC)[0];
-                $rs->free();
+                $r = $this->fetch_all_assoc($rs)[0];
                 
                 $r['componenti'] = [];
                 
@@ -129,11 +124,10 @@ class RisultatiApi extends MySqlRestApi {
                 $rs = $this->conn->query($query);
                 
                 if ($rs) {
-                    $array_idAdesionePersonale = $rs->fetch_all();
-                    $rs->free();
+                    $array_idAdesionePersonale = $this->fetch_all_assoc($rs);
 
                     foreach($array_idAdesionePersonale as &$idAdesionePersonale) {
-                        array_push($r['componenti'], $this->getAtleta($idAdesionePersonale[0]));
+                        array_push($r['componenti'], $this->getAtleta($idAdesionePersonale['idAdesionePersonale']));
                     }
                 }
             } else {

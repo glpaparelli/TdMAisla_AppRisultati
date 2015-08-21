@@ -43,5 +43,16 @@ class MySqlRestApi extends RestApi {
         if($this->conn)
             $this->conn->close();
     }
-
+    
+    public function fetch_all_assoc($result_set) {
+        $r = NULL;
+        if($result_set) {
+            $r = [];
+            while ($row = $result_set->fetch_assoc()) {
+                array_push($r, $row);
+            }
+            $result_set->free();
+        }
+        return $r;
+    }
 }
