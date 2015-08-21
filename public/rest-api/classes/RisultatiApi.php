@@ -5,43 +5,142 @@ class RisultatiApi extends MySqlRestApi {
     public function __construct($request, $mysqlConf) {
         parent::__construct($request, $mysqlConf);
     }
-    
+
     protected function risultato() {
         if ($this->method == 'GET') {
-            $query = 'SELECT'
-                    . 'gara.nome as nomeGara,'
-                    . 'gara.disputataIl as garaDisputataIl,'
-                    . 'gara.idTipoGara,'
-                    . 'iscrizione.idAdesionePersonale,'
-                    . 'iscrizione.idSquadra,'
-                    . 'risultato.codiceConclusioneGara AS conlusioneGara,'
-                    . 'risultato.posizione,'
-                    . 'risultato.posizioneInSesso,'
-                    . 'risultato.posizioneInCategoria,'
-                    . 'risultato.tempo,'
-                    . 'risultato.posizioneDopoNuoto,'
-                    . 'risultato.tempoDopoNuoto,'
-                    . 'risultato.posizioneDopoBici,'
-                    . 'risultato.tempoDopoBici,'
-                    . 'risultato.posizioneFrazioneBici,'
-                    . 'risultato.tempoFrazioneBici,'
-                    . 'risultato.posizioneFrazioneCorsa,'
-                    . 'risultato.tempoFrazioneCorsa'
-                    . 'FROM iscrizione INNER JOIN risultato ON iscrizione.id = risultato.idIscrizione'
-                    . 'INNER JOIN gara ON gara.id = iscrizione.idGara';
-            $result = $this->conn->query($query);
-            if($result) {
-                $risultato = $result->fetch_all(MYSQLI_ASSOC);
-                $result->free();
+            $query = 'SELECT '
+                    . 'gara.nome as nomeGara, '
+                    . 'gara.disputataIl as garaDisputataIl, '
+                    . 'gara.idTipoGara, '
+                    . 'iscrizione.pettorale, '
+                    . 'iscrizione__adesione_personale.idAdesionePersonale, '
+                    . 'iscrizione__squadra.idSquadra, '
+                    . 'risultato.codiceConclusioneGara AS conlusioneGara, '
+                    . 'risultato.posizione, '
+                    . 'risultato.posizioneInSesso, '
+                    . 'risultato.posizioneInCategoria, '
+                    . 'risultato.tempo, '
+                    . 'risultato.posizioneDopoNuoto, '
+                    . 'risultato.tempoDopoNuoto, '
+                    . 'risultato.posizioneDopoBici, '
+                    . 'risultato.tempoDopoBici, '
+                    . 'risultato.posizioneFrazioneBici, '
+                    . 'risultato.tempoFrazioneBici, '
+                    . 'risultato.posizioneFrazioneCorsa, '
+                    . 'risultato.tempoFrazioneCorsa '
+                    . 'FROM iscrizione INNER JOIN risultato ON iscrizione.id = risultato.idIscrizione '
+                    . 'INNER JOIN gara ON gara.id = iscrizione.idGara '
+                    . 'LEFT JOIN iscrizione__adesione_personale ON iscrizione__adesione_personale.idIscrizione = iscrizione.id '
+                    . 'LEFT JOIN iscrizione__squadra ON iscrizione__squadra.idIscrizione = iscrizione.id';
+            $rs = $this->conn->query($query);
+            if ($rs) {
+                $array_risultati = $rs->fetch_all(MYSQLI_ASSOC);
+                $rs->free();
+                foreach ($array_risultati as &$risultato) {
+                    // tipo gara
+                    $risultato['tipoGara']= $this->getTipoGara($risultato['idTipoGara']);
+                    if ($risultato['idAdesionePersonale'] !== NULL) {
+                        $risultato['atleta'] = $this->getAtleta($risultato['idAdesionePersonale']);
+                    } else if ($risultato['idSquadra'] !== NULL) {
+                        $risultato['squadra'] = $this->getSquadra($risultato['idSquadra']);
+                    } else {
+                        // TODO eccezione dati inconsistenti
+                        throw new Exception("pippo");
+                    }
+                    unset($risultato['idTipoGara']);
+                    unset($risultato['idAdesionePersonale']);
+                    unset($risultato['idSquadra']);
+                }
+            } else {
+                throw new Exception($this->conn->error);
             }
-            else {
-                $risultato = [];
-            }           
-            
-            return $risultato;
+
+            return $array_risultati;
         } else {
             throw new MethodNotAllowedException();
         }
+    }
+
+    private function getTipoGara($idTipoGara) {
+        $r = NULL;
+        if (isset($idTipoGara)) {
+            $query = 'SELECT nome_it, nome_en '
+                    . 'FROM tipo_gara '
+                    . "WHERE id = $idTipoGara";
+            $rs = $this->conn->query($query);
+            if ($rs) {
+                $r = $rs->fetch_all(MYSQLI_ASSOC)[0];
+                $rs->free();
+            } else {
+                throw new InconsistentDataException("No tipo_gara with id: $idTipoGara");
+            }
+        }
+        return $r;
+    }
+
+    private function getAtleta($idAdesionePersonale) {
+        $r = NULL;
+        if (isset($idAdesionePersonale)) {
+            $query = "SELECT 
+                            utente.nome, 
+                            utente.cognome, 
+                            societa_fitri.nome as societa, 
+                            adesione_personale.categoriaFitri, 
+                            utente.sesso 
+                    FROM 
+                            adesione_personale 
+                            INNER JOIN utente ON utente.id = adesione_personale.id 
+                            INNER JOIN richiesta_tesseramento ON richiesta_tesseramento.idAdesionePersonale = adesione_personale.id 
+                            INNER JOIN tesseramento ON tesseramento.idRichiestaTesseramento = richiesta_tesseramento.id 
+                            LEFT JOIN tesseramento__societa_fitri ON tesseramento__societa_fitri.idTesseramento = tesseramento.id 
+                            LEFT JOIN societa_fitri ON societa_fitri.codice = tesseramento__societa_fitri.codiceSocietaFitri
+                    WHERE adesione_personale.id = $idAdesionePersonale";
+            $rs = $this->conn->query($query);
+            if ($rs) {
+                $r = $rs->fetch_all(MYSQLI_ASSOC)[0];
+                $rs->free();
+                
+                if ($r['societa'] === NULL) {
+                    unset($r['societa']);
+                }
+            } else {
+                throw new InconsistentDataException("No adesione_personale with id: $idAdesionePersonale");
+            }
+        }
+        return $r;
+    }
+
+    private function getSquadra($idSquadra) {
+        $r = NULL;
+        if (isset($idSquadra)) {
+            $query = "SELECT nome
+                    FROM squadra
+                    WHERE id = $idSquadra";
+            $rs = $this->conn->query($query);
+            if ($rs) {
+                $r = $rs->fetch_all(MYSQLI_ASSOC)[0];
+                $rs->free();
+                
+                $r['componenti'] = [];
+                
+                $query = "SELECT idAdesionePersonale
+                    FROM adesione_personale__squadra
+                    WHERE idSquadra = $idSquadra";
+                $rs = $this->conn->query($query);
+                
+                if ($rs) {
+                    $array_idAdesionePersonale = $rs->fetch_all();
+                    $rs->free();
+
+                    foreach($array_idAdesionePersonale as &$idAdesionePersonale) {
+                        array_push($r['componenti'], $this->getAtleta($idAdesionePersonale[0]));
+                    }
+                }
+            } else {
+                throw new InconsistentDataException("No squadra with id: $idSquadra");
+            }
+        }
+        return $r;
     }
 
 }

@@ -101,7 +101,7 @@ abstract class RestApi {
         }
     }
 
-    protected function response($data, $status = 200) {
+    public function response($data, $status = 200) {
         header("HTTP/1.1 " . $status . " " . $this->requestStatus($status));
         header("Content-Type: application/json");
         echo json_encode($data);
