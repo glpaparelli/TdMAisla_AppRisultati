@@ -6,12 +6,37 @@ class RisultatiApi extends MySqlRestApi {
         parent::__construct($request, $mysqlConf);
     }
 
-    protected function risultato() {
+    protected function Gara() {
         if ($this->method == 'GET') {
+
             $query = 'SELECT '
-                    . 'gara.nome as nomeGara, '
-                    . 'gara.disputataIl as garaDisputataIl, '
-                    . 'gara.idTipoGara, '
+                    . 'id, '
+                    . 'nome, '
+                    . 'disputataIl, '
+                    . 'idTipoGara '
+                    . 'FROM gara';
+            $rs = $this->conn->query($query);
+            if ($rs) {
+                $array_risultati = $this->fetch_all_assoc($rs);
+                foreach ($array_risultati as &$risultato) {
+                    // tipo gara
+                    $risultato['tipoGara'] = $this->getTipoGara($risultato['idTipoGara']);
+                    unset($risultato['idTipoGara']);
+                }
+            } else {
+                throw new Exception($this->conn->error);
+            }
+            return $array_risultati;
+        } else {
+            throw new MethodNotAllowedException();
+        }
+    }
+
+    protected function Risultati() {
+        if ($this->method == 'GET') {
+            if (isset($this->request['idGara']) && is_numeric($this->request['idGara'])) {
+                $idGara = $this->request['idGara'];
+                $query = 'SELECT '
                     . 'iscrizione.pettorale, '
                     . 'iscrizione__adesione_personale.idAdesionePersonale, '
                     . 'iscrizione__squadra.idSquadra, '
@@ -31,29 +56,31 @@ class RisultatiApi extends MySqlRestApi {
                     . 'FROM iscrizione INNER JOIN risultato ON iscrizione.id = risultato.idIscrizione '
                     . 'INNER JOIN gara ON gara.id = iscrizione.idGara '
                     . 'LEFT JOIN iscrizione__adesione_personale ON iscrizione__adesione_personale.idIscrizione = iscrizione.id '
-                    . 'LEFT JOIN iscrizione__squadra ON iscrizione__squadra.idIscrizione = iscrizione.id';
-            $rs = $this->conn->query($query);
-            if ($rs) {
-                $array_risultati = $this->fetch_all_assoc($rs);
-                foreach ($array_risultati as &$risultato) {
-                    // tipo gara
-                    $risultato['tipoGara']= $this->getTipoGara($risultato['idTipoGara']);
-                    if ($risultato['idAdesionePersonale'] !== NULL) {
-                        $risultato['atleta'] = $this->getAtleta($risultato['idAdesionePersonale']);
-                    } else if ($risultato['idSquadra'] !== NULL) {
-                        $risultato['squadra'] = $this->getSquadra($risultato['idSquadra']);
-                    } else {
-                        throw new InconsistentDataException('Both idAdesionePersonale and idSquadra are null');
-                    }
-                    unset($risultato['idTipoGara']);
-                    unset($risultato['idAdesionePersonale']);
-                    unset($risultato['idSquadra']);
-                }
-            } else {
-                throw new Exception($this->conn->error);
-            }
+                    . 'LEFT JOIN iscrizione__squadra ON iscrizione__squadra.idIscrizione = iscrizione.id '
+                    . "WHERE gara.id = $idGara "
+                    . 'ORDER BY risultato.codiceConclusioneGara ASC, risultato.posizione ASC';
+                $rs = $this->conn->query($query);
+                if ($rs) {
+                    $array_risultati = $this->fetch_all_assoc($rs);
+                    foreach ($array_risultati as &$risultato) {
+                        if ($risultato['idAdesionePersonale'] !== NULL) {
+                            $risultato['atleta'] = $this->getAtleta($risultato['idAdesionePersonale']);
+                        } else if ($risultato['idSquadra'] !== NULL) {
+                            $risultato['squadra'] = $this->getSquadra($risultato['idSquadra']);
+                        } else {
+                            throw new InconsistentDataException('Both idAdesionePersonale and idSquadra are null');
+                        }
 
-            return $array_risultati;
+                        unset($risultato['idAdesionePersonale']);
+                        unset($risultato['idSquadra']);
+                    }
+                } else {
+                    throw new Exception($this->conn->error);
+                }
+                return $array_risultati;
+            } else {
+                throw new BadRequestException('idGara is required and must be numeric');
+            }
         } else {
             throw new MethodNotAllowedException();
         }
@@ -95,7 +122,7 @@ class RisultatiApi extends MySqlRestApi {
             $rs = $this->conn->query($query);
             if ($rs) {
                 $r = $this->fetch_all_assoc($rs)[0];
-                
+
                 if ($r['societa'] === NULL) {
                     unset($r['societa']);
                 }
@@ -115,18 +142,18 @@ class RisultatiApi extends MySqlRestApi {
             $rs = $this->conn->query($query);
             if ($rs) {
                 $r = $this->fetch_all_assoc($rs)[0];
-                
+
                 $r['componenti'] = [];
-                
+
                 $query = "SELECT idAdesionePersonale
                     FROM adesione_personale__squadra
                     WHERE idSquadra = $idSquadra";
                 $rs = $this->conn->query($query);
-                
+
                 if ($rs) {
                     $array_idAdesionePersonale = $this->fetch_all_assoc($rs);
 
-                    foreach($array_idAdesionePersonale as &$idAdesionePersonale) {
+                    foreach ($array_idAdesionePersonale as &$idAdesionePersonale) {
                         array_push($r['componenti'], $this->getAtleta($idAdesionePersonale['idAdesionePersonale']));
                     }
                 }

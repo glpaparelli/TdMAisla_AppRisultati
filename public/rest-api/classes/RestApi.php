@@ -97,7 +97,8 @@ abstract class RestApi {
             $this->response($this->{$this->endpoint}());
         }
         else {
-            $this->response("No Endpoint: $this->endpoint", 404);
+            //$this->response("No Endpoint: $this->endpoint", 404);
+            throw new NotFoundException("No Endpoint: $this->endpoint");
         }
     }
 
