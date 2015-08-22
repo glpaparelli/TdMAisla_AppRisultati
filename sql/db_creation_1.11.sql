@@ -1,11 +1,7 @@
--- phpMyAdmin SQL Dump
--- version 4.4.13.1
--- http://www.phpmyadmin.net
---
--- Host: 127.0.0.1
--- Creato il: Ago 21, 2015 alle 19:25
--- Versione del server: 5.6.25
--- Versione PHP: 5.6.11
+-- ATTENZIONE
+-- Per creare su Aruba copiare la sezione contrassegnata dalgas@gmail
+-- =====> INIZIO ARUBA
+-- =====> FINE ARUBA
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -19,17 +15,17 @@ SET time_zone = "+00:00";
 --
 -- Database: `aisla_triathlon`
 --
-DROP DATABASE `aisla_triathlon`;
-
 CREATE DATABASE IF NOT EXISTS `aisla_triathlon` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `aisla_triathlon`;
 
--- --------------------------------------------------------
 
+-- --------------------------------------------------------
+-- =====> INIZIO ARUBA
 --
 -- Struttura della tabella `abilitazione_modalita_pagamento`
 --
 
+DROP TABLE IF EXISTS `abilitazione_modalita_pagamento`;
 CREATE TABLE IF NOT EXISTS `abilitazione_modalita_pagamento` (
   `idGara` bigint(20) unsigned NOT NULL,
   `idModalitaPagamento` tinyint(3) unsigned NOT NULL,
@@ -42,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `abilitazione_modalita_pagamento` (
 -- Struttura della tabella `abilitazione_tipo_iscrizione`
 --
 
+DROP TABLE IF EXISTS `abilitazione_tipo_iscrizione`;
 CREATE TABLE IF NOT EXISTS `abilitazione_tipo_iscrizione` (
   `idGara` bigint(20) unsigned NOT NULL,
   `idTipoIscrizione` tinyint(3) unsigned NOT NULL,
@@ -55,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `abilitazione_tipo_iscrizione` (
 -- Struttura della tabella `abilitazione_tipo_richiesta_tesseramento`
 --
 
+DROP TABLE IF EXISTS `abilitazione_tipo_richiesta_tesseramento`;
 CREATE TABLE IF NOT EXISTS `abilitazione_tipo_richiesta_tesseramento` (
   `idTipoRichiestaTesseramento` tinyint(4) unsigned NOT NULL,
   `idGara` bigint(20) unsigned NOT NULL,
@@ -68,6 +66,7 @@ CREATE TABLE IF NOT EXISTS `abilitazione_tipo_richiesta_tesseramento` (
 -- Struttura della tabella `adesione_personale`
 --
 
+DROP TABLE IF EXISTS `adesione_personale`;
 CREATE TABLE IF NOT EXISTS `adesione_personale` (
   `id` bigint(20) unsigned NOT NULL,
   `categoriaFitri` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -163,6 +162,7 @@ INSERT INTO `adesione_personale` (`id`, `categoriaFitri`, `indirizzoLinea1`, `in
 -- Struttura della tabella `adesione_personale__invito`
 --
 
+DROP TABLE IF EXISTS `adesione_personale__invito`;
 CREATE TABLE IF NOT EXISTS `adesione_personale__invito` (
   `idAdesionePersonale` bigint(20) unsigned NOT NULL,
   `codiceInvito` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL
@@ -174,6 +174,7 @@ CREATE TABLE IF NOT EXISTS `adesione_personale__invito` (
 -- Struttura della tabella `adesione_personale__squadra`
 --
 
+DROP TABLE IF EXISTS `adesione_personale__squadra`;
 CREATE TABLE IF NOT EXISTS `adesione_personale__squadra` (
   `idAdesionePersonale` bigint(20) unsigned NOT NULL,
   `idSquadra` bigint(20) unsigned NOT NULL
@@ -206,6 +207,7 @@ INSERT INTO `adesione_personale__squadra` (`idAdesionePersonale`, `idSquadra`) V
 -- Struttura della tabella `categoria_fitri`
 --
 
+DROP TABLE IF EXISTS `categoria_fitri`;
 CREATE TABLE IF NOT EXISTS `categoria_fitri` (
   `nome` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nomeEsteso` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -243,6 +245,7 @@ INSERT INTO `categoria_fitri` (`nome`, `nomeEsteso`, `iniziaDaAnni`) VALUES
 -- Struttura della tabella `codice_conclusione_gara`
 --
 
+DROP TABLE IF EXISTS `codice_conclusione_gara`;
 CREATE TABLE IF NOT EXISTS `codice_conclusione_gara` (
   `nome` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
   `descrizione_it` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -265,6 +268,7 @@ INSERT INTO `codice_conclusione_gara` (`nome`, `descrizione_it`, `descrizione_en
 -- Struttura della tabella `documento`
 --
 
+DROP TABLE IF EXISTS `documento`;
 CREATE TABLE IF NOT EXISTS `documento` (
   `nomeFile` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `idRichiestaTesseramento` bigint(11) unsigned NOT NULL
@@ -276,6 +280,7 @@ CREATE TABLE IF NOT EXISTS `documento` (
 -- Struttura della tabella `gara`
 --
 
+DROP TABLE IF EXISTS `gara`;
 CREATE TABLE IF NOT EXISTS `gara` (
   `id` bigint(20) unsigned NOT NULL,
   `nome` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -300,6 +305,7 @@ INSERT INTO `gara` (`id`, `nome`, `descrizione_it`, `descrizione_en`, `disputata
 -- Struttura della tabella `invito`
 --
 
+DROP TABLE IF EXISTS `invito`;
 CREATE TABLE IF NOT EXISTS `invito` (
   `codice` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nome` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -314,6 +320,7 @@ CREATE TABLE IF NOT EXISTS `invito` (
 -- Struttura della tabella `iscrizione`
 --
 
+DROP TABLE IF EXISTS `iscrizione`;
 CREATE TABLE IF NOT EXISTS `iscrizione` (
   `id` bigint(20) unsigned NOT NULL,
   `eseguitaIl` datetime NOT NULL,
@@ -322,7 +329,7 @@ CREATE TABLE IF NOT EXISTS `iscrizione` (
   `haImmagine` tinyint(1) NOT NULL,
   `idOrdine` bigint(11) unsigned NOT NULL,
   `idGara` bigint(11) unsigned NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dump dei dati per la tabella `iscrizione`
@@ -397,6 +404,7 @@ INSERT INTO `iscrizione` (`id`, `eseguitaIl`, `pettorale`, `motto`, `haImmagine`
 -- Struttura della tabella `iscrizione__adesione_personale`
 --
 
+DROP TABLE IF EXISTS `iscrizione__adesione_personale`;
 CREATE TABLE IF NOT EXISTS `iscrizione__adesione_personale` (
   `idIscrizione` bigint(20) unsigned NOT NULL,
   `idAdesionePersonale` bigint(20) unsigned NOT NULL
@@ -470,6 +478,7 @@ INSERT INTO `iscrizione__adesione_personale` (`idIscrizione`, `idAdesionePersona
 -- Struttura della tabella `iscrizione__squadra`
 --
 
+DROP TABLE IF EXISTS `iscrizione__squadra`;
 CREATE TABLE IF NOT EXISTS `iscrizione__squadra` (
   `idIscrizione` bigint(20) unsigned NOT NULL,
   `idSquadra` bigint(20) unsigned NOT NULL
@@ -492,6 +501,7 @@ INSERT INTO `iscrizione__squadra` (`idIscrizione`, `idSquadra`) VALUES
 -- Struttura della tabella `modalita_pagamento`
 --
 
+DROP TABLE IF EXISTS `modalita_pagamento`;
 CREATE TABLE IF NOT EXISTS `modalita_pagamento` (
   `id` tinyint(3) unsigned NOT NULL,
   `nome_it` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -514,6 +524,7 @@ INSERT INTO `modalita_pagamento` (`id`, `nome_it`, `descrizione_it`, `nome_en`, 
 -- Struttura della tabella `ordine`
 --
 
+DROP TABLE IF EXISTS `ordine`;
 CREATE TABLE IF NOT EXISTS `ordine` (
   `id` bigint(20) unsigned NOT NULL,
   `ricevutoIl` datetime NOT NULL,
@@ -545,6 +556,7 @@ INSERT INTO `ordine` (`id`, `ricevutoIl`, `totale`, `pagato`, `ricevutaInviata`,
 -- Struttura della tabella `richiesta_tesseramento`
 --
 
+DROP TABLE IF EXISTS `richiesta_tesseramento`;
 CREATE TABLE IF NOT EXISTS `richiesta_tesseramento` (
   `id` bigint(20) unsigned NOT NULL,
   `eseguitaIl` datetime NOT NULL,
@@ -636,6 +648,7 @@ INSERT INTO `richiesta_tesseramento` (`id`, `eseguitaIl`, `verificata`, `idAdesi
 -- Struttura della tabella `risultato`
 --
 
+DROP TABLE IF EXISTS `risultato`;
 CREATE TABLE IF NOT EXISTS `risultato` (
   `id` bigint(20) unsigned NOT NULL,
   `codiceConclusioneGara` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -715,11 +728,11 @@ INSERT INTO `risultato` (`id`, `codiceConclusioneGara`, `posizione`, `posizioneI
 (568, 'COM', 6, 6, 1, '02:25:59', 7, '00:28:59', 6, '01:45:23', 7, '01:16:24', 3, '00:40:36', 55),
 (569, 'DNF', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 56),
 (570, 'COM', 10, 10, 6, '02:44:42', 12, '00:31:40', 11, '01:57:23', 12, '01:25:43', 10, '00:47:19', 57),
-(571, 'COM', 4, NULL, 4, '02:31:00', 4, '00:30:57', 5, '01:51:43', 4, '01:20:46', 3, '00:39:17', 58),
-(572, 'COM', 1, NULL, 1, '02:00:37', 1, '00:22:28', 1, '01:21:50', 1, '00:59:22', 2, '00:38:47', 59),
-(573, 'COM', 2, NULL, 2, '02:09:33', 2, '00:25:24', 2, '01:33:02', 2, '01:07:38', 1, '00:36:31', 60),
-(574, 'COM', 5, NULL, 5, '02:34:50', 5, '00:25:18', 4, '01:47:46', 5, '01:22:28', 4, '00:47:04', 61),
-(575, 'COM', 3, NULL, 3, '02:28:21', 3, '00:26:44', 3, '01:40:39', 3, '01:13:55', 5, '00:47:42', 62);
+(571, 'COM', 4, NULL, NULL, '02:31:00', 4, '00:30:57', 5, '01:51:43', 4, '01:20:46', 3, '00:39:17', 58),
+(572, 'COM', 1, NULL, NULL, '02:00:37', 1, '00:22:28', 1, '01:21:50', 1, '00:59:22', 2, '00:38:47', 59),
+(573, 'COM', 2, NULL, NULL, '02:09:33', 2, '00:25:24', 2, '01:33:02', 2, '01:07:38', 1, '00:36:31', 60),
+(574, 'COM', 5, NULL, NULL, '02:34:50', 5, '00:25:18', 4, '01:47:46', 5, '01:22:28', 4, '00:47:04', 61),
+(575, 'COM', 3, NULL, NULL, '02:28:21', 3, '00:26:44', 3, '01:40:39', 3, '01:13:55', 5, '00:47:42', 62);
 
 -- --------------------------------------------------------
 
@@ -727,6 +740,7 @@ INSERT INTO `risultato` (`id`, `codiceConclusioneGara`, `posizione`, `posizioneI
 -- Struttura della tabella `societa_fitri`
 --
 
+DROP TABLE IF EXISTS `societa_fitri`;
 CREATE TABLE IF NOT EXISTS `societa_fitri` (
   `codice` int(11) NOT NULL,
   `nome` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL
@@ -1110,6 +1124,7 @@ INSERT INTO `societa_fitri` (`codice`, `nome`) VALUES
 -- Struttura della tabella `squadra`
 --
 
+DROP TABLE IF EXISTS `squadra`;
 CREATE TABLE IF NOT EXISTS `squadra` (
   `id` bigint(20) unsigned NOT NULL,
   `nome` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL
@@ -1132,6 +1147,7 @@ INSERT INTO `squadra` (`id`, `nome`) VALUES
 -- Struttura della tabella `tesseramento`
 --
 
+DROP TABLE IF EXISTS `tesseramento`;
 CREATE TABLE IF NOT EXISTS `tesseramento` (
   `id` bigint(20) unsigned NOT NULL,
   `finoAl` datetime NOT NULL,
@@ -1225,6 +1241,7 @@ INSERT INTO `tesseramento` (`id`, `finoAl`, `matricola`, `stranieroSocieta`, `st
 -- Struttura della tabella `tesseramento__societa_fitri`
 --
 
+DROP TABLE IF EXISTS `tesseramento__societa_fitri`;
 CREATE TABLE IF NOT EXISTS `tesseramento__societa_fitri` (
   `idTesseramento` bigint(20) unsigned NOT NULL,
   `codiceSocietaFitri` int(11) NOT NULL
@@ -1294,6 +1311,7 @@ INSERT INTO `tesseramento__societa_fitri` (`idTesseramento`, `codiceSocietaFitri
 -- Struttura della tabella `tipo_gara`
 --
 
+DROP TABLE IF EXISTS `tipo_gara`;
 CREATE TABLE IF NOT EXISTS `tipo_gara` (
   `id` tinyint(3) unsigned NOT NULL,
   `nome_it` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1316,6 +1334,7 @@ INSERT INTO `tipo_gara` (`id`, `nome_it`, `descrizione_it`, `nome_en`, `descrizi
 -- Struttura della tabella `tipo_iscrizione`
 --
 
+DROP TABLE IF EXISTS `tipo_iscrizione`;
 CREATE TABLE IF NOT EXISTS `tipo_iscrizione` (
   `id` tinyint(3) unsigned NOT NULL,
   `nome_it` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1337,6 +1356,7 @@ INSERT INTO `tipo_iscrizione` (`id`, `nome_it`, `descrizione_it`, `nome_en`, `de
 -- Struttura della tabella `tipo_richiesta_tesseramento`
 --
 
+DROP TABLE IF EXISTS `tipo_richiesta_tesseramento`;
 CREATE TABLE IF NOT EXISTS `tipo_richiesta_tesseramento` (
   `id` tinyint(3) unsigned NOT NULL,
   `nome_it` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1359,6 +1379,7 @@ INSERT INTO `tipo_richiesta_tesseramento` (`id`, `nome_it`, `descrizione_it`, `n
 -- Struttura della tabella `tipo_tesseramento`
 --
 
+DROP TABLE IF EXISTS `tipo_tesseramento`;
 CREATE TABLE IF NOT EXISTS `tipo_tesseramento` (
   `id` tinyint(3) unsigned NOT NULL,
   `nome_it` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1379,6 +1400,7 @@ INSERT INTO `tipo_tesseramento` (`id`, `nome_it`, `nome_en`) VALUES
 -- Struttura della tabella `utente`
 --
 
+DROP TABLE IF EXISTS `utente`;
 CREATE TABLE IF NOT EXISTS `utente` (
   `id` bigint(20) unsigned NOT NULL,
   `username` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -1479,6 +1501,7 @@ INSERT INTO `utente` (`id`, `username`, `password`, `gettoneAutenticazione`, `ge
 -- Struttura della tabella `verifica_pagamento`
 --
 
+DROP TABLE IF EXISTS `verifica_pagamento`;
 CREATE TABLE IF NOT EXISTS `verifica_pagamento` (
   `id` bigint(20) unsigned NOT NULL,
   `idOrdine` bigint(20) unsigned NOT NULL,
@@ -1492,6 +1515,7 @@ CREATE TABLE IF NOT EXISTS `verifica_pagamento` (
 -- Struttura della tabella `verifica_richiesta_tesseramento`
 --
 
+DROP TABLE IF EXISTS `verifica_richiesta_tesseramento`;
 CREATE TABLE IF NOT EXISTS `verifica_richiesta_tesseramento` (
   `id` bigint(20) unsigned NOT NULL,
   `idAmministratore` bigint(20) unsigned NOT NULL,
@@ -1506,6 +1530,7 @@ CREATE TABLE IF NOT EXISTS `verifica_richiesta_tesseramento` (
 -- Struttura della tabella `versione_database`
 --
 
+DROP TABLE IF EXISTS `versione_database`;
 CREATE TABLE IF NOT EXISTS `versione_database` (
   `versione` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1515,7 +1540,7 @@ CREATE TABLE IF NOT EXISTS `versione_database` (
 --
 
 INSERT INTO `versione_database` (`versione`) VALUES
-('1.10');
+('1.11');
 
 --
 -- Indici per le tabelle scaricate
@@ -1763,7 +1788,7 @@ ALTER TABLE `gara`
 -- AUTO_INCREMENT per la tabella `iscrizione`
 --
 ALTER TABLE `iscrizione`
-  MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=73;
+  MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=63;
 --
 -- AUTO_INCREMENT per la tabella `modalita_pagamento`
 --
@@ -1948,6 +1973,8 @@ ALTER TABLE `tesseramento__societa_fitri`
 ALTER TABLE `verifica_richiesta_tesseramento`
   ADD CONSTRAINT `verifica_richiesta_tesseramento_ibfk_1` FOREIGN KEY (`idAmministratore`) REFERENCES `utente` (`id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `verifica_richiesta_tesseramento_ibfk_2` FOREIGN KEY (`idRichiestaTesseramento`) REFERENCES `richiesta_tesseramento` (`id`) ON UPDATE CASCADE;
+  
+-- =====> FINE ARUBA
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
