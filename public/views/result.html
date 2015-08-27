@@ -1,0 +1,107 @@
+
+<html ng-app="testFilter">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.angularjs.org/1.4.3/angular.js" type="text/javascript"></script>
+        <script src="https://code.angularjs.org/1.4.3/angular-resource.js" type="text/javascript"></script>
+        <script src="https://code.angularjs.org/1.4.3/angular-route.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="../js/modulo1/filterTestModule.js" type="text/javascript"></script>
+        <script src="../js/modulo1/tryFilters.js" type="text/javascript"></script>
+        <script src="../js/modulo1/resultController.js" type="text/javascript"></script>
+    </head>
+<body>
+<div ng-controller="resultsController as resCtrl">
+    
+    <label>TipoGara</label>
+    <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" id="controlloGare" data-toggle="dropdown">
+                Scegli la gara<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="menuGara">
+                <li role="presentation" ng-repeat="gara in resCtrl.gare | garePresenti">
+                    <a role="menuitem" tabindex="-1" >{{gara.nome_en}}</a></li>
+            </ul>
+    </div>
+    
+    <label>Sesso</label>
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="controlloSesso" data-toggle="dropdown">
+            Scegli il Sesso<span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="menuSesso">
+            <li role="presentation" ng-model="ris" ng-click="resCtrl.selezionaSesso(ris)" ng-repeat="ris in resCtrl.garaSelezionata | sessoPresente">
+                <a role="menuitem" tabindex="-1" >{{ris}}</a></li>
+        </ul>
+    </div>
+    
+    <label>Gare</label>
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="controlloSesso" data-toggle="dropdown">
+            Scegli la gara<span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="menuGara">
+            <li role="presentation" ng-click="resCtrl.selezionaGara(ris)" ng-repeat="ris in resCtrl.gare | nomeGara">
+                <a role="menuitem" tabindex="-1" >{{ris}}</a></li>
+        </ul>
+    </div>
+    <br>
+    <label ng-hide="resCtrl.squadra">Categoria FITRI</label>
+    <div class="dropdown" ng-hide="resCtrl.squadra">
+        <button class="btn btn-default dropdown-toggle" type="button" id="controlloSesso" data-toggle="dropdown">
+            Scegli la Categoria<span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="menuGara">
+            <li role="presentation" ng-click="resCtrl.selezionaCategoria(ris)" 
+                ng-repeat="ris in resCtrl.garaSelezionata | categoriaPresente">
+                <a role="menuitem" tabindex="-1" >{{ris}}</a></li>
+        </ul>
+    </div>
+    
+    <div class="col-xs-3">
+        <div class="form-group">
+            <br>
+            <label for="usr">Cerca</label>
+            <input type="text" ng-model="stringaDiRicerca" 
+                   ng-change="resCtrl.filtroRicerca(stringaDiRicerca)"  class="form-control" id="stringaDiRicerca">
+        </div>
+    </div>
+    <table class="table table-striped">
+        <th ng-hide="resCtrl.squadra">Nome</th>
+        <th ng-hide="resCtrl.squadra">Cognome</th>
+        <th ng-hide="resCtrl.squadra">Pettorale</th>
+        <th ng-hide="resCtrl.squadra">Società</th>
+        <th ng-hide="resCtrl.squadra">Categoria Fitri</th>
+        <tr ng-repeat="ris in resCtrl.garaSelezionata | filtroSesso: resCtrl.sessoSelezionato 
+                    | filtroRicerca:resCtrl.stringaDaRicercare | filtroCategoria:resCtrl.categoriaSelezionata track by $index">
+            <td ng-hide="resCtrl.squadra">{{ris.atleta.nome}}</td>
+            <td ng-hide="resCtrl.squadra">{{ris.atleta.cognome}}</td>
+            <td ng-hide="resCtrl.squadra">{{ris.pettorale}}</td>
+            <td ng-hide="resCtrl.squadra">{{ris.atleta.societa}}</td>
+            <td ng-hide="resCtrl.squadra">{{ris.atleta.categoriaFitri}}</td>
+            <td class="col-xs-2" ng-show="resCtrl.squadra"> Nome Squadra: <b> {{ris.squadra.nome}}</b><br>
+                Pettorale Squadra: <b>{{ris.pettorale}}</b></td>
+            <td class="col-xs-5" ng-show="resCtrl.squadra">
+                <table class="table table-striped">
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <tr ng-repeat="members in ris.squadra.componenti ">
+                        <td>
+                            {{members.nome }}
+                        </td>
+                        <td>
+                            {{members.cognome  }}
+                        </td>
+                        
+                    </tr>
+                    
+                </table>
+            </td>
+    </table>
+</div>
+</body>
+</html>
