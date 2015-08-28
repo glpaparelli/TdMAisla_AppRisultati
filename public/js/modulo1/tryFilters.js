@@ -1,7 +1,7 @@
 
 /* global angular */
 angular.module("testFilter")
-//TODO QUESTO FILTRO NON SERVE 
+//TODO QUESTO FILTRO NON SERVE è quello per il tipo della gara, individuale e a squadre
 .filter("garePresenti", function (){
     return function (gare){
         if(angular.isArray(gare)){
@@ -129,9 +129,10 @@ angular.module("testFilter")
         stringaDiRicerca = angular.uppercase(stringaDiRicerca);
         if(angular.isArray(risultato) && stringaDiRicerca != null){
             var risultatoCongruo = [];
+            
             for(var i = 0; i < risultato.length; i++){
                 if(risultato[i].squadra == null){
-                    console.log("squadra nulla");
+                    console.log(risultato[i].atleta.selezionato);
                     var nome = angular.uppercase(risultato[i].atleta.nome);
                     var cognome = angular.uppercase(risultato[i].atleta.cognome);
                     if(risultato[i].atleta.societa == null){
@@ -144,8 +145,7 @@ angular.module("testFilter")
                                 || societa.includes(stringaDiRicerca)){
                             risultatoCongruo.push(risultato[i]);
                         }
-                    }
-                           
+                    }   
                 }else{
                     for(var j = 0; j<risultato[i].squadra.componenti.length; j++){
                         var nomeSquadra = angular.uppercase(risultato[i].squadra.nome);
@@ -161,6 +161,28 @@ angular.module("testFilter")
             return risultatoCongruo;
         }else
             return risultato;
+    };
+})
+.filter("filtroSelezionato", function(){
+    return function (risultato, visualizzaSelezionati){
+        if(angular.isArray(risultato) && visualizzaSelezionati == true){
+            console.log("nel filtro");
+            var atletiSelezionati = [];
+            if(risultato.squadra == null){
+                for (var i = 0; i<risultato.length; i++){
+                    if(risultato[i].atleta.selezionato == true){
+                        atletiSelezionati.push(risultato[i]);
+                    }
+                }
+            }
+            if(atletiSelezionati.length == 0){
+                atletiSelezionati = risultato;
+            }
+            return atletiSelezionati;
+         
+        }else 
+            return risultato;
+        
     };
 });
 

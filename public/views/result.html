@@ -62,6 +62,10 @@
         </ul>
     </div>
     
+    <label>Mostra Selezionati</label>
+    <input type="checkbox" ng-model="visualizzaSelezionati"
+           ng-change="resCtrl.mostraSelezionati(visualizzaSelezionati)">
+    
     <div class="col-xs-3">
         <div class="form-group">
             <br>
@@ -76,19 +80,24 @@
         <th ng-hide="resCtrl.squadra">Pettorale</th>
         <th ng-hide="resCtrl.squadra">Società</th>
         <th ng-hide="resCtrl.squadra">Categoria Fitri</th>
+        <th ng-hide="resCtrl.squadra">Seleziona</th>
         <tr ng-repeat="ris in resCtrl.garaSelezionata | filtroSesso: resCtrl.sessoSelezionato 
-                    | filtroRicerca:resCtrl.stringaDaRicercare | filtroCategoria:resCtrl.categoriaSelezionata track by $index">
+                    | filtroRicerca:resCtrl.stringaDaRicercare | filtroCategoria:resCtrl.categoriaSelezionata |
+                    filtroSelezionato: resCtrl.visualizzaSelezionati track by $index">
             <td ng-hide="resCtrl.squadra">{{ris.atleta.nome}}</td>
             <td ng-hide="resCtrl.squadra">{{ris.atleta.cognome}}</td>
             <td ng-hide="resCtrl.squadra">{{ris.pettorale}}</td>
             <td ng-hide="resCtrl.squadra">{{ris.atleta.societa}}</td>
             <td ng-hide="resCtrl.squadra">{{ris.atleta.categoriaFitri}}</td>
+            <td ng-hide="resCtrl.squadra">
+                <input type="checkbox" ng-model="ris.isSelected" ng-click="resCtrl.seleziona(ris)"></td>
             <td class="col-xs-2" ng-show="resCtrl.squadra"> Nome Squadra: <b> {{ris.squadra.nome}}</b><br>
                 Pettorale Squadra: <b>{{ris.pettorale}}</b></td>
             <td class="col-xs-5" ng-show="resCtrl.squadra">
                 <table class="table table-striped">
                     <th>Nome</th>
                     <th>Cognome</th>
+                    <th>Seleziona</th>
                     <tr ng-repeat="members in ris.squadra.componenti ">
                         <td>
                             {{members.nome }}
@@ -96,9 +105,10 @@
                         <td>
                             {{members.cognome  }}
                         </td>
-                        
-                    </tr>
-                    
+                        <td>
+                            <input type="checkbox" ng-checked="members.selezionato = true">
+                        </td>    
+                    </tr>   
                 </table>
             </td>
     </table>
