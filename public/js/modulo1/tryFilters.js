@@ -96,10 +96,15 @@ angular.module("testFilter")
     return function (risultato, sessoSelezionato){
         if(angular.isArray(risultato) && sessoSelezionato != null ){
             var filtratoPerSesso = [];            
-            for(var i = 0; i <risultato.length; i++){
+            if(sessoSelezionato == "NS"){
+                filtratoPerSesso = risultato;
+            }else{
+                for(var i = 0; i <risultato.length; i++){
                 if(sessoSelezionato == risultato[i].atleta.sesso)
                     filtratoPerSesso.push(risultato[i]);
+                }
             }
+            
             return filtratoPerSesso;
         }else
             return risultato ;
@@ -107,18 +112,23 @@ angular.module("testFilter")
 })
 .filter("filtroCategoria", function (){
     return function (risultato, categoriaSelezionata){
-        for (var i = 0; i<risultato.length; i++){
-            if(risultato[i].squadra != null){
-                categoriaSelezionata = null
-            };
-        }
         if(angular.isArray(risultato) && categoriaSelezionata != null){
             var filtratoPerCategoria = [];            
-            for(var i = 0; i <risultato.length; i++){
-                if(categoriaSelezionata == risultato[i].atleta.categoriaFitri){
-                    filtratoPerCategoria.push(risultato[i]);
+            if(categoriaSelezionata == "NC"){
+                filtratoPerCategoria = risultato;
+            }else{
+                for (var i = 0; i<risultato.length; i++){
+                    if(risultato[i].squadra != null){
+                        categoriaSelezionata = null;
+                    };
+                }   
+                for(var i = 0; i <risultato.length; i++){
+                    if(categoriaSelezionata == risultato[i].atleta.categoriaFitri){
+                        filtratoPerCategoria.push(risultato[i]);
+                    }
                 }
             }
+            
             return filtratoPerCategoria;
         }else
             return risultato ;
@@ -132,11 +142,14 @@ angular.module("testFilter")
             
             for(var i = 0; i < risultato.length; i++){
                 if(risultato[i].squadra == null){
-                    console.log(risultato[i].atleta.selezionato);
                     var nome = angular.uppercase(risultato[i].atleta.nome);
                     var cognome = angular.uppercase(risultato[i].atleta.cognome);
+                    var pettorale = risultato[i].pettorale;
+                    console.log(pettorale);
+                    console.log(pettorale.includes(stringaDiRicerca));
                     if(risultato[i].atleta.societa == null){
-                         if(nome.includes(stringaDiRicerca) || cognome.includes(stringaDiRicerca)){
+                         if(nome.includes(stringaDiRicerca) || 
+                            cognome.includes(stringaDiRicerca)){
                             risultatoCongruo.push(risultato[i]);
                         } 
                     }else{
@@ -166,24 +179,165 @@ angular.module("testFilter")
 .filter("filtroSelezionato", function(){
     return function (risultato, visualizzaSelezionati){
         if(angular.isArray(risultato) && visualizzaSelezionati == true){
-            console.log("nel filtro");
-            var atletiSelezionati = [];
-            if(risultato.squadra == null){
+            var selezionati = [];
+            var squadra = null;
+            if(angular.isDefined(risultato[0].squadra)){
+                squadra = true;
+            }
+            if(squadra == null){
                 for (var i = 0; i<risultato.length; i++){
                     if(risultato[i].atleta.selezionato == true){
-                        atletiSelezionati.push(risultato[i]);
+                        selezionati.push(risultato[i]);
+                    }
+                }
+            }else{
+                for (var i = 0; i<risultato.length; i++){
+                    if(risultato[i].squadra.selezionato == true){
+                        selezionati.push(risultato[i]);
                     }
                 }
             }
-            if(atletiSelezionati.length == 0){
-                atletiSelezionati = risultato;
-            }
-            return atletiSelezionati;
-         
+            return selezionati;
         }else 
             return risultato;
         
     };
+})
+.filter("filtroDifferenziale", function(){
+    return function (risultato, tempoDifferenziale, visualizzaSelezionati, gara){
+        if(angular.isArray(risultato) && tempoDifferenziale == true 
+                && visualizzaSelezionati == true && risultato.length > 0 ){
+            
+            
+            if(risultato[0].squadra == null || risultato[0].squadra == "undefined"){
+                var squadra = false;
+            }else
+                squadra = true;
+            
+            var tempiPiuVeloci = {
+                   tempoDopoNuoto:     new Date(gara.disputataIl),
+                   tempoFrazioneCorsa: new Date(gara.disputataIl),
+                   tempoFrazioneBici:  new Date(gara.disputataIl)
+               };
+            var tempoDaConfrontare = {
+                tempoDopoNuoto:     new Date(gara.disputataIl),
+                tempoFrazioneCorsa: new Date(gara.disputataIl),
+                tempoFrazioneBici:  new Date(gara.disputataIl)
+            };
+            var frazioniGare = 
+                ["tempoDopoNuoto",
+                 "tempoFrazioneCorsa",
+                 "tempoFrazioneBici"
+                ];
+                
+            
+            if(squadra == false){
+               
+                for(var i = 0; i < frazioniGare.length; i++){
+                    var split = risultato[0][frazioniGare[i]].split(":");
+                    var hours = split[0];
+                    var minutes = split[1];
+                    var seconds = split[2];
+                    tempiPiuVeloci[frazioniGare[i]].setHours(hours);
+                    tempiPiuVeloci[frazioniGare[i]].setMinutes(minutes);
+                    tempiPiuVeloci[frazioniGare[i]].setSeconds(seconds);  
+                    
+                }
+                risultato[0].differenzialeNuoto = risultato[0].tempoDopoNuoto;
+                risultato[0].differenzialeCorsa = risultato[0].tempoFrazioneCorsa;
+                risultato[0].differenzialeBici = risultato[0].tempoFrazioneBici;
+                //TODO, NON FA PER ERRORE NELLE API DI FT (NON CONCLUSIONE MA CONLUSIONE)
+                console.log(tempiPiuVeloci);
+                for(var i = 1; i < risultato.length; i++){
+                    for (var j = 0; j < frazioniGare.length; j++){
+                        console.log(risultato[i].conlusioneGara);
+                            if(risultato[i].conclusioneGara == "COM"){
+                                var splitI = risultato[i][frazioniGare[j]].split(":");
+                                var hoursI = splitI[0];
+                                var minutesI = splitI[1];
+                                var secondsI = splitI[2];
+                                tempoDaConfrontare[frazioniGare[j]].setHours(hoursI);
+                                tempoDaConfrontare[frazioniGare[j]].setMinutes(minutesI);
+                                tempoDaConfrontare[frazioniGare[j]].setSeconds(secondsI); 
+                            }
+                        }
+                    if(risultato[i].conclusioneGara != "COM"){
+                            risultato[i].differenzialeBici = risultato[i].conclusioneGara ;
+                            risultato[i].differenzialeCorsa = risultato[i].conclusioneGara;
+                            risultato[i].differenzialeNuoto = risultato[i].conclusioneGara;
+                    }else{
+                        risultato[i].differenzialeNuoto = 
+                                Math.round(((tempoDaConfrontare.tempoDopoNuoto - tempiPiuVeloci.tempoDopoNuoto)/60000)*100)/100;
+                        if(risultato[i].differenzialeNuoto > 0){
+                            risultato[i].differenzialeNuoto = "+"+risultato[i].differenzialeNuoto;
+                        }
+                        risultato[i].differenzialeBici  = 
+                                Math.round(((tempoDaConfrontare.tempoFrazioneBici - tempiPiuVeloci.tempoFrazioneBici)/60000)*100)/100;
+                        if(risultato[i].differenzialeBici > 0){
+                            risultato[i].differenzialeBici = "+"+risultato[i].differenzialeBici;
+                        }
+                        risultato[i].differenzialeCorsa = 
+                                Math.round(((tempoDaConfrontare.tempoFrazioneCorsa - tempiPiuVeloci.tempoFrazioneCorsa)/60000)*100)/100;
+                        if(risultato[i].differenzialeCorsa > 0){
+                            risultato[i].differenzialeCorsa = "+"+risultato[i].differenzialeCorsa;
+                        }
+                    }
+                }
+            }    
+            else{
+                for(var i = 0; i < frazioniGare.length; i++){
+                    var split = risultato[0][frazioniGare[i]].split(":");
+                    var hours = split[0];
+                    var minutes = split[1];
+                    var seconds = split[2];
+                    tempiPiuVeloci[frazioniGare[i]].setHours(hours);
+                    tempiPiuVeloci[frazioniGare[i]].setMinutes(minutes);
+                    tempiPiuVeloci[frazioniGare[i]].setSeconds(seconds);  
+                    
+                }
+                risultato[0].differenzialeNuoto = risultato[0].tempoDopoNuoto;
+                risultato[0].differenzialeCorsa = risultato[0].tempoFrazioneCorsa;
+                risultato[0].differenzialeBici = risultato[0].tempoFrazioneBici;
+                
+                console.log(tempiPiuVeloci);
+                for(var i = 1; i < risultato.length; i++){
+                    for (var j = 0; j < frazioniGare.length; j++){
+                        if(risultato[i].conclusioneGara == "COM"){
+                            var splitI = risultato[i][frazioniGare[j]].split(":");
+                            var hoursI = splitI[0];
+                            var minutesI = splitI[1];
+                            var secondsI = splitI[2];
+                            tempoDaConfrontare[frazioniGare[j]].setHours(hoursI);
+                            tempoDaConfrontare[frazioniGare[j]].setMinutes(minutesI);
+                            tempoDaConfrontare[frazioniGare[j]].setSeconds(secondsI);
+                        }
+                    }
+                    if(risultato[i].conclusioneGara != "COM"){
+                        risultato[i].differenzialeBici = risultato[i].conclusioneGara ;
+                        risultato[i].differenzialeCorsa = risultato[i].conclusioneGara;
+                        risultato[i].differenzialeNuoto = risultato[i].conclusioneGara;
+                    }else{
+                        risultato[i].differenzialeNuoto = 
+                            Math.round(((tempoDaConfrontare.tempoDopoNuoto - tempiPiuVeloci.tempoDopoNuoto)/60000)*100)/100;
+                        if(risultato[i].differenzialeNuoto > 0){
+                            risultato[i].differenzialeNuoto = "+"+risultato[i].differenzialeNuoto;
+                        }
+                        risultato[i].differenzialeBici  = 
+                                Math.round(((tempoDaConfrontare.tempoFrazioneBici - tempiPiuVeloci.tempoFrazioneBici)/60000)*100)/100;
+                        if(risultato[i].differenzialeBici > 0){
+                            risultato[i].differenzialeBici = "+"+risultato[i].differenzialeBici;
+                        }
+                        risultato[i].differenzialeCorsa = 
+                                Math.round(((tempoDaConfrontare.tempoFrazioneCorsa - tempiPiuVeloci.tempoFrazioneCorsa)/60000)*100)/100;
+                        if(risultato[i].differenzialeCorsa > 0){
+                            risultato[i].differenzialeCorsa = "+"+risultato[i].differenzialeCorsa;
+                        }
+                    }
+                }
+            }
+        }
+        return risultato;
+    }; 
 });
 
 
