@@ -26,7 +26,7 @@ angular.module("testFilter")
                             vm.tempoDifferenziale = false;
                             vm.categoriaSelezionata = null;
                             vm.sessoSelezionato = null;
-                            if(risultato[i].squadra != null){
+                            if(angular.isDefined(risultato[i].squadra)){
                                 vm.squadra = true;
                             }else{
                                 vm.squadra = false;

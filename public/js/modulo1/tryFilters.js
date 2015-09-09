@@ -144,14 +144,11 @@ angular.module("testFilter")
                 if(risultato[i].squadra == null){
                     var nome = angular.uppercase(risultato[i].atleta.nome);
                     var cognome = angular.uppercase(risultato[i].atleta.cognome);
-                    var pettorale = risultato[i].pettorale;
-                    console.log(pettorale);
-                    console.log(pettorale.includes(stringaDiRicerca));
                     if(risultato[i].atleta.societa == null){
-                         if(nome.includes(stringaDiRicerca) || 
+                        if(nome.includes(stringaDiRicerca) || 
                             cognome.includes(stringaDiRicerca)){
                             risultatoCongruo.push(risultato[i]);
-                        } 
+                        }
                     }else{
                         var societa = angular.uppercase(risultato[i].atleta.societa);
                         if(nome.includes(stringaDiRicerca) || cognome.includes(stringaDiRicerca)
@@ -180,17 +177,22 @@ angular.module("testFilter")
     return function (risultato, visualizzaSelezionati){
         if(angular.isArray(risultato) && visualizzaSelezionati == true){
             var selezionati = [];
-            var squadra = null;
-            if(angular.isDefined(risultato[0].squadra)){
-                squadra = true;
+            for(var i = 0; i < risultato.length; i++){
+                if(risultato[i].squadra == null){
+                    var squadra = false;
+                }else{
+                    var squadra = true; 
+                }
+                
             }
-            if(squadra == null){
+            
+            if(squadra == false){       
                 for (var i = 0; i<risultato.length; i++){
                     if(risultato[i].atleta.selezionato == true){
                         selezionati.push(risultato[i]);
                     }
                 }
-            }else{
+            }else if(squadra == true){
                 for (var i = 0; i<risultato.length; i++){
                     if(risultato[i].squadra.selezionato == true){
                         selezionati.push(risultato[i]);
