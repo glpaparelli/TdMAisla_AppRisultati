@@ -40,7 +40,7 @@ class RisultatiApi extends MySqlRestApi {
                     . 'iscrizione.pettorale, '
                     . 'iscrizione__adesione_personale.idAdesionePersonale, '
                     . 'iscrizione__squadra.idSquadra, '
-                    . 'risultato.codiceConclusioneGara AS conlusioneGara, '
+                    . 'risultato.codiceConclusioneGara AS conclusioneGara, '
                     . 'risultato.posizione, '
                     . 'risultato.posizioneInSesso, '
                     . 'risultato.posizioneInCategoria, '

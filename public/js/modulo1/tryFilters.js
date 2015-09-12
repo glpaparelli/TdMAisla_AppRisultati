@@ -1,28 +1,6 @@
 
 /* global angular */
 angular.module("testFilter")
-//TODO QUESTO FILTRO NON SERVE è quello per il tipo della gara, individuale e a squadre
-.filter("garePresenti", function (){
-    return function (gare){
-        if(angular.isArray(gare)){
-            var controlloGare = [];
-            var trovato = false;
-            for(var i = 0;i<gare.length;i++){
-                trovato = false;
-                for(var j = 0; j<controlloGare.length && trovato == false;j++){
-                    if(angular.equals(controlloGare[j],gare[i].tipoGara))
-                        trovato = true;           
-                }
-                if(trovato === false)
-                    controlloGare.push(gare[i].tipoGara);
-            }
-            return controlloGare;
-        }
-        else{
-            return gare;
-        }
-    };
-})
 .filter("categoriaPresente", function(){
     return function (risultato){
         if(angular.isArray(risultato) && risultato.squadra == null){
@@ -139,37 +117,41 @@ angular.module("testFilter")
         stringaDiRicerca = angular.uppercase(stringaDiRicerca);
         if(angular.isArray(risultato) && stringaDiRicerca != null){
             var risultatoCongruo = [];
-            
             for(var i = 0; i < risultato.length; i++){
                 if(risultato[i].squadra == null){
                     var nome = angular.uppercase(risultato[i].atleta.nome);
                     var cognome = angular.uppercase(risultato[i].atleta.cognome);
+                    var nomeECognome = angular.uppercase(risultato[i].atleta.nome) + " " 
+                            + angular.uppercase(risultato[i].atleta.cognome);
+                    var cognomeENome = angular.uppercase(risultato[i].atleta.cognome) + " "
+                            + angular.uppercase(risultato[i].atleta.nome)
                     if(risultato[i].atleta.societa == null){
-                        if(nome.includes(stringaDiRicerca) || 
-                            cognome.includes(stringaDiRicerca)){
-                            risultatoCongruo.push(risultato[i]);
+                        if(nome.includes(stringaDiRicerca) 
+                            || cognome.includes(stringaDiRicerca) 
+                            || nomeECognome.includes(stringaDiRicerca)
+                            || cognomeENome.includes(stringaDiRicerca)){
+                                risultatoCongruo.push(risultato[i]);
                         }
                     }else{
                         var societa = angular.uppercase(risultato[i].atleta.societa);
-                        if(nome.includes(stringaDiRicerca) || cognome.includes(stringaDiRicerca)
-                                || societa.includes(stringaDiRicerca)){
-                            risultatoCongruo.push(risultato[i]);
+                        if(nome.includes(stringaDiRicerca) 
+                            || cognome.includes(stringaDiRicerca)
+                            || societa.includes(stringaDiRicerca)
+                            || nomeECognome.includes(stringaDiRicerca)
+                            || cognomeENome.includes(stringaDiRicerca)){
+                                risultatoCongruo.push(risultato[i]);
                         }
                     }   
                 }else{
-                    for(var j = 0; j<risultato[i].squadra.componenti.length; j++){
-                        var nomeSquadra = angular.uppercase(risultato[i].squadra.nome);
-                        var nomeComponente = angular.uppercase(risultato[i].squadra.componenti[j].nome);
-                        if(nomeSquadra.includes(stringaDiRicerca)){
-                            risultatoCongruo.push(risultato[i]);
-                            break;
-                        }        
-                    }
+                    var nomeSquadra = angular.uppercase(risultato[i].squadra.nome);
+                    if(nomeSquadra.includes(stringaDiRicerca)){
+                        risultatoCongruo.push(risultato[i]);
+                    }    
                 }
-                
             }
             return risultatoCongruo;
-        }else
+        }
+        else
             return risultato;
     };
 })
@@ -189,13 +171,27 @@ angular.module("testFilter")
             if(squadra == false){       
                 for (var i = 0; i<risultato.length; i++){
                     if(risultato[i].atleta.selezionato == true){
-                        selezionati.push(risultato[i]);
+                        if(risultato[i].conclusioneGara == "COM"){
+                            selezionati.push(risultato[i]);
+                        }else{
+                            risultato[i].tempo = "00:00:00";
+                            risultato[i].posizione =  risultato[i].conclusioneGara;
+                            selezionati.push(risultato[i]);
+                        }
+                            
                     }
                 }
             }else if(squadra == true){
                 for (var i = 0; i<risultato.length; i++){
                     if(risultato[i].squadra.selezionato == true){
-                        selezionati.push(risultato[i]);
+                        if(risultato[i].conclusioneGara == "COM"){
+                            selezionati.push(risultato[i]);
+                        }else{
+                            risultato[i].tempo = "00:00:00";
+                            risultato[i].posizione =  risultato[i].conclusioneGara;
+                            selezionati.push(risultato[i]);
+                        }
+                        
                     }
                 }
             }
@@ -232,9 +228,7 @@ angular.module("testFilter")
                  "tempoFrazioneBici"
                 ];
                 
-            
             if(squadra == false){
-               
                 for(var i = 0; i < frazioniGare.length; i++){
                     var split = risultato[0][frazioniGare[i]].split(":");
                     var hours = split[0];
@@ -249,10 +243,8 @@ angular.module("testFilter")
                 risultato[0].differenzialeCorsa = risultato[0].tempoFrazioneCorsa;
                 risultato[0].differenzialeBici = risultato[0].tempoFrazioneBici;
                 //TODO, NON FA PER ERRORE NELLE API DI FT (NON CONCLUSIONE MA CONLUSIONE)
-                console.log(tempiPiuVeloci);
                 for(var i = 1; i < risultato.length; i++){
                     for (var j = 0; j < frazioniGare.length; j++){
-                        console.log(risultato[i].conlusioneGara);
                             if(risultato[i].conclusioneGara == "COM"){
                                 var splitI = risultato[i][frazioniGare[j]].split(":");
                                 var hoursI = splitI[0];
@@ -301,7 +293,6 @@ angular.module("testFilter")
                 risultato[0].differenzialeCorsa = risultato[0].tempoFrazioneCorsa;
                 risultato[0].differenzialeBici = risultato[0].tempoFrazioneBici;
                 
-                console.log(tempiPiuVeloci);
                 for(var i = 1; i < risultato.length; i++){
                     for (var j = 0; j < frazioniGare.length; j++){
                         if(risultato[i].conclusioneGara == "COM"){
@@ -341,5 +332,3 @@ angular.module("testFilter")
         return risultato;
     }; 
 });
-
-

@@ -1,4 +1,6 @@
-
+<style>
+    span.error { font-weight: bold; color: red;}
+</style>
 <html ng-app="testFilter">
 <head>
         <meta charset="UTF-8">
@@ -14,175 +16,173 @@
         <script src="../js/modulo1/tryFilters.js" type="text/javascript"></script>
         <script src="../js/modulo1/resultController.js" type="text/javascript"></script>
     </head>
-<body>
-<div ng-controller="resultsController as resCtrl">
-    <div class="row">
-        <div class="col-xs-1"></div>
-        <div class="col-xs-2">
-            <label>Gare</label>
-            <div class="dropdown">
-                <button class="btn btn-default dropdown-toggle" type="button" id="controlloSesso" data-toggle="dropdown">
-                    Scegli la gara<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="menuGara">
-                    <li role="presentation" ng-click="resCtrl.selezionaGara(ris)" ng-repeat="ris in resCtrl.gare | nomeGara">
-                        <a role="menuitem" tabindex="-1" >{{ris}}</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-xs-2">
-            <label>Sesso</label>
-            <div class="dropdown">
-                <button class="btn btn-default dropdown-toggle" type="button" id="controlloSesso" data-toggle="dropdown">
-                    Scegli il Sesso<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="menuSesso">
-                    <li role="presentation" ng-model="ris" ng-click="resCtrl.selezionaSesso(ris)" ng-repeat="ris in resCtrl.garaSelezionata | sessoPresente">
-                        <a role="menuitem" tabindex="-1" >{{ris}}</a>
-                    </li>
-                    <li class="divider"></li>
-                    <li ng-click="resCtrl.selezionaSesso('NS')"><a href="#">Nussun Sesso</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-xs-2">
-            <label ng-hide="resCtrl.squadra">Categoria FITRI</label>
-            <div class="dropdown" ng-hide="resCtrl.squadra">
-                <button class="btn btn-default dropdown-toggle" type="button" id="controlloSesso" data-toggle="dropdown">
-                    Scegli la Categoria<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="menuGara">
-                    <li role="presentation" ng-click="resCtrl.selezionaCategoria(ris)" 
-                        ng-repeat="ris in resCtrl.garaSelezionata | categoriaPresente">
-                        <a role="menuitem" tabindex="-1" >{{ris}}</a>
-                    </li>
-                    <li class="divider"></li>
-                    <li ng-click="resCtrl.selezionaCategoria('NC')"><a href="#">Tutte le Categorie</a></li>
-
-                </ul>
-            </div>
-        </div>
-    </div>
-    <br><br>
-    <div class="row">
-        <div class="col-xs-1"></div>
-        <div class="col-xs-2">
-            <label>Seleziona Tutti</label>
-            <input type="checkbox" ng-model="resCtrl.tuttiSelezionati"
-               ng-click="resCtrl.selezionaTutti()">
-        </div>  
-        <div class="col-xs-2">
-            <label>Mostra Selezionati</label>
-                <input type="checkbox" ng-model="resCtrl.visualizzaSelezionati"
-               ng-change="resCtrl.mostraSelezionati()"> 
-        </div>
-        <div class="col-xs-2">
-            <label>Tempo Differenziale</label>
-            <input type="checkbox" ng-model="resCtrl.tempoDifferenziale" 
-               ng-click="resCtrl.differenziale()">
-        </div>
-         
-    </div>
-    <div class="row">
-        <div class="col-xs-1"></div>
-        <div class="form-group col-xs-3">
+    <body>
+        <div ng-controller="resultsController as resCtrl">
             <br>
-            <label for="usr">Cerca</label>
-            <input type="text" ng-model="resCtrl.stringaDiRicerca" 
-                   ng-change="resCtrl.filtroRicerca()"  class="form-control" id="stringaDiRicerca">
-        </div>
-    </div>
-        
-    
-    <div class="col-xs-12">
-        <table ng-hide="resCtrl.squadra"class="table table-bordered">
-        <th>Nome</th>
-        <th>Cognome</th>
-        <th>Pettorale</th>
-        <th>Società</th>
-        <th>Categoria Fitri</th>
-        <th ng-show="resCtrl.visualizzaSelezionati">Posizione</th>
-        <th ng-show="resCtrl.visualizzaSelezionati">Tempo</th>
-        <th ng-show="resCtrl.tempoDifferenziale">Tempi Differenziali</th>
-        <th>Seleziona</th>
-        <tr ng-repeat="ris in resCtrl.garaSelezionata 
-                        | filtroSesso: resCtrl.sessoSelezionato 
-                        | filtroRicerca:resCtrl.stringaDiRicerca 
-                        | filtroCategoria:resCtrl.categoriaSelezionata 
-                        | filtroSelezionato: resCtrl.visualizzaSelezionati 
-                        | filtroDifferenziale: resCtrl.tempoDifferenziale: resCtrl.visualizzaSelezionati: resCtrl.gara
-                            track by $index">
-            <td>{{ris.atleta.nome}}</td>
-            <td>{{ris.atleta.cognome}}</td>
-            <td>{{ris.pettorale}}</td>
-            <td>{{ris.atleta.societa}}</td>
-            <td>{{ris.atleta.categoriaFitri}}</td>
-            <td ng-show="resCtrl.visualizzaSelezionati">{{ris.posizione}}</td>
-            <td ng-show="resCtrl.visualizzaSelezionati">{{ris.tempo}}</td>
-            <td ng-show="resCtrl.tempoDifferenziale">
-                <table class="table table-hover">
-                    <th>Nuoto</th>
-                    <th>Bici</th>
-                    <th>Corsa</th>
-                    <tr>
-                       <td>{{ris.differenzialeNuoto}}</td>
-                       <td>{{ris.differenzialeBici}}</td>
-                       <td>{{ris.differenzialeCorsa}}</td>
-                    </tr>
-                    
-                </table>
-            </td>
-            <td>
-                <input type="checkbox" ng-model="ris.isSelected" ng-click="resCtrl.selezionaAtletaOSquadra(ris)">
-            </td>
-        </tr>
-    </table>
-    
-    <table ng-show="resCtrl.squadra" class="table table-striped">
-        <th>Nome Squadra</th>
-        <th>Seleziona</th>
-        <th>Componenti</th>
-        <th ng-show="resCtrl.tempoDifferenziale">Tempi Differenziali</th>
-        <tr ng-repeat="ris in resCtrl.garaSelezionata | filtroSesso: resCtrl.sessoSelezionato 
-                    | filtroRicerca:resCtrl.stringaDaRicercare | filtroCategoria:resCtrl.categoriaSelezionata |
-                    filtroSelezionato: resCtrl.visualizzaSelezionati track by $index">
-            <td class="col-xs-2">
-                {{ris.squadra.nome}}               
-            </td>
-            <td>
-                <input type="checkbox" ng-model="ris.isSelected" 
-                       ng-click="resCtrl.selezionaAtletaOSquadra(ris)">   
-            </td>
-            <td>
-                <table class="table table-hover col-xs-3">
+            <div class="row">
+                <div class="dropdown col-sm-3 col-sm-offset-1">
+                    <label>Gare</label>
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                        Scegli la gara<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="menuGara">
+                        <li role="presentation" ng-click="resCtrl.selezionaGara(ris)" ng-repeat="ris in resCtrl.gare | nomeGara">
+                            <a role="menuitem" tabindex="-1" >{{ris}}</a></li>
+                    </ul>
+                    <span class="error" ng-show="resCtrl.errorResults">
+                        Errore con il Server.<br> <a ng-click="resCtrl.reload()">Aggiorna la pagina</a>
+                    </span>
+                </div>        
+                <div class="col-sm-4 dropdown" ng-show="resCtrl.mostraFiltri && !resCtrl.squadra">
+                    <label>Sesso</label>
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                        Scegli il Sesso<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="menuSesso">
+                        <li role="presentation" ng-model="ris" ng-click="resCtrl.selezionaSesso(ris)"
+                            ng-repeat="ris in resCtrl.risultatoGaraSelezionata 
+                                    | sessoPresente">
+                            <a role="menuitem" tabindex="-1" >{{ris}}</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li ng-click="resCtrl.selezionaSesso('NS')"><a href="#">Nussun Sesso</a></li>
+                    </ul>
+                </div>
+                <div class="dropdown col-sm-4" ng-hide="resCtrl.squadra || !resCtrl.mostraFiltri">
+                    <label>Categoria FITRI</label>
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                        Scegli la Categoria<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="menuGara">
+                        <li role="presentation" ng-click="resCtrl.selezionaCategoria(ris)" 
+                            ng-repeat="ris in resCtrl.risultatoGaraSelezionata | categoriaPresente">
+                            <a role="menuitem" tabindex="-1" >{{ris}}</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li ng-click="resCtrl.selezionaCategoria('NC')"><a href="#">Tutte le Categorie</a></li>
+                    </ul>
+                </div>   
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-sm-3 col-sm-offset-1 ">
+                    <label>Seleziona Tutti</label>
+                    <input type="checkbox" ng-model="resCtrl.tuttiSelezionati"
+                       ng-click="resCtrl.selezionaTutti()">
+                </div>  
+                <div class="col-sm-4">
+                    <label>Mostra Selezionati</label>
+                        <input type="checkbox" ng-model="resCtrl.visualizzaSelezionati"
+                       ng-change="resCtrl.mostraSelezionati()"> 
+                </div>
+                <div class="col-sm-4" ng-show="resCtrl.visualizzaSelezionati">
+                    <label>Tempo Differenziale</label>
+                    <input type="checkbox" ng-model="resCtrl.tempoDifferenziale" 
+                       ng-click="resCtrl.differenziale()">
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-3 col-sm-offset-1">
+                    <br>
+                    <label for="usr">Cerca</label>
+                    <input type="text" ng-model="resCtrl.stringaDiRicerca" 
+                           ng-change="resCtrl.filtroRicerca()"  class="form-control">
+                </div>
+            </div>
+
+            <div class="col-sm-10 col-sm-offset-1 table-responsive">
+                <table ng-hide="resCtrl.squadra"class="table table-bordered">
                     <th>Nome</th>
                     <th>Cognome</th>
-                    <th>Sesso</th>
-                    <th>Categoria</th>
-                    <tr ng-repeat="members in ris.squadra.componenti">
-                        <td>{{members.nome}}</td>
-                        <td>{{members.cognome}}</td>
-                        <td>{{members.sesso}}</td>
-                        <td>{{members.categoriaFitri}}</td>  
+                    <th>Pettorale</th>
+                    <th>Società</th>
+                    <th>Categoria Fitri</th>
+                    <th ng-show="resCtrl.visualizzaSelezionati">Posizione</th>
+                    <th ng-show="resCtrl.visualizzaSelezionati">Tempo</th>
+                    <th ng-show="resCtrl.tempoDifferenziale">Tempi Differenziali</th>
+                    <th>Seleziona</th>
+                    <tr ng-repeat="ris in resCtrl.risultatoGaraSelezionata 
+                            | filtroSesso: resCtrl.sessoSelezionato 
+                            | filtroRicerca:resCtrl.stringaDiRicerca 
+                            | filtroCategoria:resCtrl.categoriaSelezionata 
+                            | filtroSelezionato: resCtrl.visualizzaSelezionati 
+                            | filtroDifferenziale
+                                : resCtrl.tempoDifferenziale
+                                : resCtrl.visualizzaSelezionati
+                                : resCtrl.gara
+                            track by $index">
+                        <td>{{ris.atleta.nome}}</td>
+                        <td>{{ris.atleta.cognome}}</td>
+                        <td>{{ris.pettorale}}</td>
+                        <td>{{ris.atleta.societa}}</td>
+                        <td>{{ris.atleta.categoriaFitri}}</td>
+                        <td ng-show="resCtrl.visualizzaSelezionati">{{ris.posizione}}</td>
+                        <td ng-show="resCtrl.visualizzaSelezionati">{{ris.tempo}}</td>
+                        <td ng-show="resCtrl.tempoDifferenziale">
+                            <table class="table table-hover">
+                                <th>Nuoto</th>
+                                <th>Bici</th>
+                                <th>Corsa</th>
+                                <tr>
+                                   <td>{{ris.differenzialeNuoto}}</td>
+                                   <td>{{ris.differenzialeBici}}</td>
+                                   <td>{{ris.differenzialeCorsa}}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <input type="checkbox" ng-model="ris.isSelected" 
+                               ng-click="resCtrl.selezionaAtletaOSquadra(ris)">
+                        </td>
                     </tr>
                 </table>
-            </td>
-            <td ng-show="resCtrl.tempoDifferenziale">
-                <table class="table table-hover">
-                    <th>Nuoto</th>
-                    <th>Bici</th>
-                    <th>Corsa</th>
-                    <tr>
-                       <td>{{ris.differenzialeNuoto}}</td>
-                       <td>{{ris.differenzialeBici}}</td>
-                       <td>{{ris.differenzialeCorsa}}</td>
+
+                <table ng-show="resCtrl.squadra" class="table table-bordered">
+                    <th>Nome Squadra</th>
+                    <th>Seleziona</th>
+                    <th>Componenti</th>
+                    <th>Tempo</th>
+                    <th ng-show="resCtrl.tempoDifferenziale">Tempi Differenziali</th>
+                    <tr ng-repeat="ris in resCtrl.risultatoGaraSelezionata 
+                                    | filtroSelezionato: resCtrl.visualizzaSelezionati
+                                    | filtroRicerca:resCtrl.stringaDaRicercare 
+                                    track by $index">
+                        <td>{{ris.squadra.nome}}</td>
+                        <td>
+                            <input type="checkbox" ng-model="ris.isSelected" 
+                                ng-click="resCtrl.selezionaAtletaOSquadra(ris)">   
+                        </td>
+                        <td>
+                            <table class="table table-bordered">
+                                <th>Nome</th>
+                                <th>Cognome</th>
+                                <th>Sesso</th>
+                                <th>Categoria</th>
+                                <tr ng-repeat="members in ris.squadra.componenti">
+                                    <td>{{members.nome}}</td>
+                                    <td>{{members.cognome}}</td>
+                                    <td>{{members.sesso}}</td>
+                                    <td>{{members.categoriaFitri}}</td>  
+                                </tr>
+                            </table>
+                        </td>
+                        <td>{{ris.tempo}}</td>
+                        <td ng-show="resCtrl.tempoDifferenziale">
+                            <table class="table table-bordered">
+                                <th>Nuoto</th>
+                                <th>Bici</th>
+                                <th>Corsa</th>
+                                <tr>
+                                   <td>{{ris.differenzialeNuoto}}</td>
+                                   <td>{{ris.differenzialeBici}}</td>
+                                   <td>{{ris.differenzialeCorsa}}</td>
+                                </tr>
+                            </table>
+                        </td>
                     </tr>
                 </table>
-            </td>
-        </tr>
-    </table>
-    </div>    
-    
-</div>
-</body>
+            </div>    
+        </div>
+    </body>
 </html>
